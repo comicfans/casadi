@@ -840,6 +840,10 @@ namespace casadi {
   }
 
   Function Nlpsol::kkt() const {
+#ifdef CASADI_WITH_THREADSAFE_SYMBOLICS
+    // Safe access to kkt_
+    std::lock_guard<std::mutex> lock(kkt_mtx_);
+#endif // CASADI_WITH_THREADSAFE_SYMBOLICS
     // Quick return if cached
     if (kkt_.alive()) {
       return shared_cast<Function>(kkt_.shared());

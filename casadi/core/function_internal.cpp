@@ -112,6 +112,8 @@ namespace casadi {
     sz_res_per_ = 0;
     sz_iw_per_ = 0;
     sz_w_per_ = 0;
+
+    dump_count_ = 0;
   }
 
   ProtoFunction::~ProtoFunction() {
@@ -782,9 +784,6 @@ namespace casadi {
   }
 
   casadi_int FunctionInternal::get_dump_id() const {
-#ifdef CASADI_WITH_THREAD
-    std::lock_guard<std::mutex> lock(dump_count_mtx_);
-#endif // CASADI_WITH_THREAD
     return dump_count_++;
   }
 
@@ -963,6 +962,10 @@ namespace casadi {
   }
 
   Dict FunctionInternal::cache() const {
+#ifdef CASADI_WITH_THREADSAFE_SYMBOLICS
+    // Safe access to cache_
+    std::lock_guard<std::mutex> lock(cache_mtx_);
+#endif // CASADI_WITH_THREADSAFE_SYMBOLICS
     // Return value
     Dict ret;
     // Add all Function instances that haven't been deleted
@@ -984,6 +987,10 @@ namespace casadi {
 
   bool FunctionInternal::incache(const std::string& fname, Function& f,
       const std::string& suffix) const {
+#ifdef CASADI_WITH_THREADSAFE_SYMBOLICS
+    // Safe access to cache_
+    std::lock_guard<std::mutex> lock(cache_mtx_);
+#endif // CASADI_WITH_THREADSAFE_SYMBOLICS
     auto it = cache_.find(fname + ":" + suffix);
     if (it!=cache_.end() && it->second.alive()) {
       f = shared_cast<Function>(it->second.shared());
@@ -994,6 +1001,10 @@ namespace casadi {
   }
 
   void FunctionInternal::tocache(const Function& f, const std::string& suffix) const {
+#ifdef CASADI_WITH_THREADSAFE_SYMBOLICS
+    // Safe access to cache_
+    std::lock_guard<std::mutex> lock(cache_mtx_);
+#endif // CASADI_WITH_THREADSAFE_SYMBOLICS
     // Add to cache
     cache_.insert(std::make_pair(f.name() + ":" + suffix, f));
     // Remove a lost reference, if any, to prevent uncontrolled growth
@@ -1857,6 +1868,10 @@ namespace casadi {
 
   Sparsity& FunctionInternal::jac_sparsity(casadi_int oind, casadi_int iind, bool compact,
       bool symmetric) const {
+#ifdef CASADI_WITH_THREADSAFE_SYMBOLICS
+    // Safe access to jac_sparsity_
+    std::lock_guard<std::mutex> lock(jac_sparsity_mtx_);
+#endif // CASADI_WITH_THREADSAFE_SYMBOLICS
     // If first call, allocate cache
     for (bool c : {false, true}) {
       if (jac_sparsity_[c].empty()) jac_sparsity_[c].resize(n_in_ * n_out_);
@@ -3629,6 +3644,10 @@ namespace casadi {
   }
 
   void FunctionInternal::set_jac_sparsity(casadi_int oind, casadi_int iind, const Sparsity& sp) {
+#ifdef CASADI_WITH_THREADSAFE_SYMBOLICS
+    // Safe access to jac_sparsity_
+    std::lock_guard<std::mutex> lock(jac_sparsity_mtx_);
+#endif // CASADI_WITH_THREADSAFE_SYMBOLICS
     casadi_int ind = iind + oind * n_in_;
     jac_sparsity_[false].resize(n_in_ * n_out_);
     jac_sparsity_[false].at(ind) = sp;
@@ -4034,6 +4053,7 @@ namespace casadi {
     eval_ = nullptr;
     checkout_ = nullptr;
     release_ = nullptr;
+    dump_count_ = 0;
   }
 
   void ProtoFunction::serialize(SerializingStream& s) const {

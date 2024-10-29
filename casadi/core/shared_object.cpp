@@ -27,6 +27,7 @@
 #include "function.hpp"
 #endif // WITH_EXTRA_CHECKS
 #include <typeinfo>
+#include <thread>
 
 namespace casadi {
 
@@ -78,6 +79,10 @@ namespace casadi {
 #ifdef WITH_EXTRA_CHECKS
     casadi_assert_dev(Function::call_depth_==0);
 #endif // WITH_EXTRA_CHECKS
+#ifdef CASADI_WITH_THREADSAFE_SYMBOLICS
+    // Safe access to node
+    std::lock_guard<std::mutex> lock(mutex_node);
+#endif // CASADI_WITH_THREADSAFE_SYMBOLICS
     if (node) node->count++;
   }
 
@@ -85,7 +90,12 @@ namespace casadi {
 #ifdef WITH_EXTRA_CHECKS
     casadi_assert_dev(Function::call_depth_==0);
 #endif // WITH_EXTRA_CHECKS
+#ifdef CASADI_WITH_THREADSAFE_SYMBOLICS
+    // Safe access to node
+    std::lock_guard<std::mutex> lock(mutex_node);
+#endif // CASADI_WITH_THREADSAFE_SYMBOLICS
     if (node && --node->count == 0) {
+      //std::cout << "delete node " + str(node) + " from thread " + str(std::this_thread::get_id()) + "\n" << std::flush;
       delete node;
       node = nullptr;
     }

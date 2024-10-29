@@ -872,6 +872,11 @@ namespace casadi {
     // Hash the pattern
     std::size_t h = hash_sparsity(nrow, ncol, colind, row);
 
+#ifdef CASADI_WITH_THREADSAFE_SYMBOLICS
+    // Safe access to CachingMap
+    std::lock_guard<std::mutex> lock(cachingmap_mtx);
+#endif // CASADI_WITH_THREADSAFE_SYMBOLICS
+
     // Get a reference to the cache
     CachingMap& cache = getCache();
 
@@ -959,6 +964,10 @@ namespace casadi {
       }
     }
   }
+
+#ifdef CASADI_WITH_THREADSAFE_SYMBOLICS
+  std::mutex Sparsity::cachingmap_mtx;
+#endif //CASADI_WITH_THREADSAFE_SYMBOLICS
 
   Sparsity Sparsity::tril(const Sparsity& x, bool includeDiagonal) {
     return x->_tril(includeDiagonal);

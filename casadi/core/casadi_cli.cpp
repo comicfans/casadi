@@ -28,6 +28,7 @@
 
 using namespace casadi;
 
+
 int eval_dump(const std::string& name) {
     // Load function
     Function f = Function::load(name+".casadi");

@@ -323,6 +323,7 @@ else()
   endif()
 endif()
 
+option(WITH_THREADSAFE_SYMBOLICS "Numeric evaluation in CasADi is thread-safe. Use this flag to make symbolics thread-safe as well. May adversly impact performance" ON)
 
 # OpenCL
 option(WITH_OPENCL "Compile with OpenCL support (experimental)" OFF)

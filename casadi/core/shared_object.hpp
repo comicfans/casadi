@@ -30,6 +30,13 @@
 #include "exception.hpp"
 #include <map>
 #include <vector>
+#ifdef CASADI_WITH_THREAD
+#ifdef CASADI_WITH_THREAD_MINGW
+#include <mingw.mutex.h>
+#else // CASADI_WITH_THREAD_MINGW
+#include <mutex>
+#endif // CASADI_WITH_THREAD_MINGW
+#endif //CASADI_WITH_THREAD
 
 namespace casadi {
 
@@ -167,6 +174,9 @@ namespace casadi {
     void count_down(); // decrease counter of the node
   private:
     SharedObjectInternal *node;
+#ifdef CASADI_WITH_THREADSAFE_SYMBOLICS
+    std::mutex mutex_node;
+#endif // CASADI_WITH_THREADSAFE_SYMBOLICS
 #endif // SWIG
 /// \endcond
   };
