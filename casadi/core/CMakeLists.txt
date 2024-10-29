@@ -280,3 +280,7 @@ if(INSTALL_INTERNAL_HEADERS)
 endif()
 
 target_compile_definitions(casadi PUBLIC CASADI_SNPRINTF=snprintf)
+
+if(WITH_THREADSAFE_SYMBOLICS)
+  target_compile_definitions(casadi PUBLIC CASADI_WITH_THREADSAFE_SYMBOLICS)
+endif()
