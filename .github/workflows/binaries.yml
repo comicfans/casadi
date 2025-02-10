@@ -230,7 +230,7 @@ jobs:
           map: |
            {
               "manylinux1-x64": {"os": "linux", "bitness": "64", "suffix":"64"},
-              "manylinux2014-x64": {"os": "linux", "bitness": "64", "suffix":"64"},
+              "manylinux2014-x64": {"os": "linux", "bitness": "64", "suffix":"64"}
            }
           export_to: env
       - uses: jgillis/universal_grafter@master
