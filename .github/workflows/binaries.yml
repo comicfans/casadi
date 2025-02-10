@@ -1,6 +1,12 @@
 name: binaries
 
-on: [push, pull_request]
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch'     
+        required: true
+    
 
 env:
   cache-suffix: v8
