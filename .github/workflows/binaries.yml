@@ -85,7 +85,7 @@ jobs:
         prerelease: true
       if: github.event_name != 'pull_request'
 
-    - uses: actions/upload-artifact@v3.1.2
+    - uses: actions/upload-artifact@v4
       with:
         name: casadi_source_wrapper
         path: casadi_source.zip
@@ -155,7 +155,7 @@ jobs:
           # Needed to make CoinUtils work
           ./dockcross --args "--env PKG_CONFIG_PATH_x86_64_w64_mingw32_shared_posix=/work/build/external_projects/lib64/pkgconfig:/work/build/external_projects/lib/pkgconfig:/work/build/external_projects/share/pkgconfig" -- /work/.github/workflows/patch_toolchain cmake --build build -v
       - run: zip -rq ${{github.job}}-${{matrix.target}}.zip build
-      - uses: actions/upload-artifact@v3.1.2
+      - uses: actions/upload-artifact@v4
         with:
           name: ${{github.job}}-${{ matrix.target}}
           path: ${{github.job}}-${{matrix.target}}.zip
@@ -265,7 +265,7 @@ jobs:
           file: casadi-${{ needs.version.outputs.casadi }}-${{env.os}}${{env.suffix}}-py${{matrix.py2}}.zip
           prerelease: true
         if: github.event_name != 'pull_request'
-      - uses: actions/upload-artifact@v3.1.2
+      - uses: actions/upload-artifact@v4
         with:
           name: casadi-${{env.os}}${{env.suffix}}-py${{matrix.py2}}
           path: casadi-${{env.os}}${{env.suffix}}-py${{matrix.py2}}.zip
