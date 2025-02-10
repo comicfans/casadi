@@ -2,11 +2,6 @@ name: binaries
 
 on:
   workflow_dispatch:
-    inputs:
-      branch:
-        description: 'Branch'     
-        required: true
-    
 
 env:
   cache-suffix: v8
